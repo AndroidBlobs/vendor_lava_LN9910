@@ -1,0 +1,76 @@
+service vendor.factorytest /vendor/bin/factorytest
+    user root
+    group root input radio system sdcard_rw net_bt_admin wifi camera media
+	
+#add by betterlife for btlserver 20190308 start
+#### this file is for Spreadtrum(展讯), not for Qualcomm/MediaTek (高通/mtk)
+#for 7731e 9.0 关机工模测试
+service btlfpserver /vendor/bin/hw/btlfpserver
+	user system
+	group system sdcard_rw
+#add by betterlife for btlserver 20190308 end	
+
+service console-ft /system/bin/sh
+    console
+    user root
+    group root
+    seclabel u:r:shell:s0
+
+on property:ro.bootmode=factorytest
+    class_start early_hal
+    class_start hal
+    start sensors-hal-1-0
+    start vendor.sensors-hal-1-0
+    setprop persist.ylog.enabled 1
+    start ylog
+    start slogmodem
+    start hwservicemanager
+    start console-ft
+    start debuggerd
+    start debuggerd64
+    start modem_control
+    start logd
+    start gnss_download
+    start audioserver
+    start media
+    start wcnd
+    start wcnd_eng
+    start gpsd
+    start servicemanager
+    start wificond
+    start vendor.factorytest
+
+#support for android8.1 trigger by bootmode=factorytest in init.rc
+on factorytest
+    class_start early_hal
+    class_start hal
+    start sensors-hal-1-0
+    start vendor.sensors-hal-1-0
+    setprop persist.ylog.enabled 1
+    start ylog
+    start slogmodem
+    start hwservicemanager
+    start console-ft
+    start debuggerd
+    start debuggerd64
+    start vendor.modem_control
+    start logd
+    start gnss_download
+    start audioserver
+    start media
+    start wcnd
+    start wcnd_eng
+    start gpsd
+    start servicemanager
+    start wificond
+    chmod 0666 /dev/adf-interface0.0
+    chmod 0666 /dev/adf-overlay-engine0.0
+    chmod 0666 /dev/adf0
+	#add by btl  btlfpserver start
+#### this file is for Spreadtrum(展讯), not for Qualcomm/MediaTek (高通/mtk)
+#for 7731e 9.0 关机工模测试
+    chmod 0666 /dev/trusty-ipc-dev0
+    chmod 0666 /dev/blfp  
+    start btlfpserver
+#add by btl  btlfpserver end	
+    start vendor.factorytest
